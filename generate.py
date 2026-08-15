@@ -16,9 +16,9 @@ def generate(model, prompt, stoi, itos, max_new_tokens=2000,
         
         if top_k > 0:
             values, _ = torch.topk(logits, top_k)
-            logits[logits < values[:, -1:]] = float("=inf")
+            logits[logits < values[:, -1:]] = float("-inf")
 
-        probs = torch.softmax(logits, top_k)
+        probs = torch.softmax(logits, dim=-1)
         next_token = torch.multinomial(probs, num_samples=1)
         idx = torch.cat([idx, next_token], dim=1)
 
