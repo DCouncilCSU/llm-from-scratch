@@ -1,4 +1,6 @@
 
+from generate import generate
+
 import math
 import torch
 
