@@ -107,7 +107,7 @@ def train(data_path, max_steps=5000, batch_size=64, n_layer=6,
         _, loss = model(x, y)
         optimizer.zero_grad()
         loss.backward()
-        torch.nn.utils.clip_grads_norm_(model.parameters(),
+        torch.nn.utils.clip_grad_norm_(model.parameters(),
             max_norm=1.0)
         optimizer.step()
 
