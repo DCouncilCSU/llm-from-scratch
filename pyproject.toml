@@ -1,5 +1,5 @@
 [project]
-name = "llm-training-workshop"
+name = "llm-from-scratch"
 version = "0.1.0"
 description = "Train a GPT from scratch on a MacBook"
 readme = "README.md"

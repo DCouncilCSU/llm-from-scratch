@@ -4,13 +4,14 @@ This is the core of the workshop. You'll write the full GPT model architecture f
 
 ## The Big Picture
 
-A GPT is an **autoregressive language model**: given a sequence of tokens, it predicts the next one. Stack this prediction in a loop and you get text generation.
+A GPT is an **autoregressive language model**: given a sequence of input tokens \( (x_1, x_2, ..., x_t) \), it predicts the probability distribution for the next token \( x_{t+1} \). During text generation, the model samples a token from this distribution, appends it to the sequence, and feeds the updated sequence back into itself. Repeating this loop step-by-step generates continuous text.
 
-The architecture is a stack of identical **transformer blocks**, each containing:
-1. **Multi-head self-attention** — lets each token look at all previous tokens
-2. **Feed-forward network (MLP)** — processes each position independently
-3. **Residual connections** — add the input back to the output of each sub-layer
-4. **Layer normalization** — stabilizes training
+At its core, the GPT architecture consists of an embedding layer followed by a stack of identical **transformer blocks**, culminating in a final layer normalization and linear projection to vocabulary logits. Each transformer block is composed of four essential components:
+
+1. **Multi-head self-attention** — Allows tokens in a sequence to dynamically exchange information. Rather than treating each token in isolation, self-attention lets every token query previous tokens to pull relevant context. By splitting the embedding space into multiple "heads," the model can simultaneously attend to different types of relationships (e.g., syntactic structure, long-range dependencies, or semantic associations) at different positions in parallel. A causal mask ensures that token \( t \) can only look at tokens \(\le t\), maintaining the autoregressive property.
+2. **Feed-forward network (MLP)** — Operates as a position-wise non-linear feature transformation. While self-attention aggregates and routes information *between* tokens across the sequence dimension, the MLP processes each token's representation independently along the channel (embedding) dimension. Typically structured as a two-layer projection with an intermediate expansion (e.g., expanding from \( d_{model} \) to \( 4 x d_{model} \)) and a non-linear activation (such as GELU), it allows the model to store knowledge and perform complex computations on individual token states.
+3. **Residual connections** — Pass the un-transformed input of a sub-layer directly to its output by adding them together (\( x + SubLayer(x) \)). Residual connections create an unimpeded gradient highway throughout the deep stack of blocks, mitigating the vanishing gradient problem during backpropagation. Architecturally, they allow each layer to learn incremental refinements or delta updates to the token representations rather than needing to reconstruct the full signal from scratch.
+4. **Layer normalization** — Standardizes the activations across the feature dimension for each token independently (with learned scale and shift parameters). Placed prior to each sub-layer (pre-LN design), layer normalization ensures that feature scales remain consistent and bounded as signals propagate through deep networks. This drastically stabilizes optimization, enables higher learning rates, and prevents vanishing/exploding activations during training.
 
 ## Write It: `model.py`
 
